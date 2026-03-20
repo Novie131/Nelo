@@ -1,0 +1,15 @@
+# 二進位執行檔
+nelo
+nelo.exe
+*-linux
+*-arm64
+
+# 設定檔 (保護 API Key)
+configs/config.yaml
+configs/config.windows.yaml
+# 建立一個範例檔供他人參考，但不包含金鑰
+!configs/config.yaml.example
+
+# Go 依賴與暫存
+vendor/
+go.sum
