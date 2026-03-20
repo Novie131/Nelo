@@ -1,17 +1,39 @@
 # --- 二進位執行檔 ---
-# 只忽略根目錄下的編譯產出物，不影響子資料夾
 /nelo
 /nelo.exe
 *-linux
 *-arm64
+# 增加通用執行檔過濾，防止開發測試產生的臨時檔
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# --- Go 相關工具與緩存 ---
+# Go 測試產生的二進位檔
+*.test
+# 效能分析數據
+*.out
+# Delve 除錯器產生的臨時檔
+__debug_bin
 
 # --- 設定檔 (保護 API Key) ---
-# 這裡我們維持原樣，但確保路徑正確
 configs/config.yaml
 configs/config.windows.yaml
 !configs/config.yaml.example
+# 如果你有用 .env 檔案也可以加上
+.env
 
-# --- Go 依賴與暫存 ---
+# --- 系統與 IDE 雜物 (跨平台開發必備) ---
+# macOS 產生的隱藏檔
+.DS_Store
+# Windows 產生的縮圖緩存
+Thumbs.db
+# VS Code 設定 (建議忽略，除非團隊有統一規範)
+.vscode/
+# 如果之後用 JetBrains 系列 (GoLand)
+.idea/
+
+# --- Go 依賴 ---
 vendor/
-# 建議：go.sum 通常「需要」推上 GitHub，除非你有特殊理由，否則可以註解掉
-# go.sum
