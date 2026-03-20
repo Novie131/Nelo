@@ -1,15 +1,17 @@
-# 二進位執行檔
-nelo
-nelo.exe
+# --- 二進位執行檔 ---
+# 只忽略根目錄下的編譯產出物，不影響子資料夾
+/nelo
+/nelo.exe
 *-linux
 *-arm64
 
-# 設定檔 (保護 API Key)
+# --- 設定檔 (保護 API Key) ---
+# 這裡我們維持原樣，但確保路徑正確
 configs/config.yaml
 configs/config.windows.yaml
-# 建立一個範例檔供他人參考，但不包含金鑰
 !configs/config.yaml.example
 
-# Go 依賴與暫存
+# --- Go 依賴與暫存 ---
 vendor/
-go.sum
+# 建議：go.sum 通常「需要」推上 GitHub，除非你有特殊理由，否則可以註解掉
+# go.sum
