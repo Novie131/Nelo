@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nelo Hub Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-gray-900 text-gray-100 p-8 font-sans">
+    <div class="max-w-5xl mx-auto">
+        
+        <header class="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
+            <h1 class="text-3xl font-bold text-blue-400 flex items-center gap-2">
+                <span>🛰️</span> Nelo Hub
+            </h1>
+            <span class="bg-green-900 text-green-300 px-3 py-1 rounded-full text-sm font-medium tracking-wide border border-green-700 shadow-sm">
+                ● Server Active
+            </span>
+        </header>
+
+        {{ if .Project }}
+        <div class="bg-gray-800 rounded-xl p-6 shadow-2xl mb-6 border border-gray-700">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-1">{{ .Project.ProjectName }}</h2>
+                    <p class="text-gray-400 text-sm">
+                        <span class="mr-3">💻 來源機器: <span class="text-gray-300 font-mono">{{ .Project.MachineName }}</span></span>
+                        <span>📄 檔案數量: <span class="text-gray-300 font-mono">{{ len .Project.Files }}</span></span>
+                    </p>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="clearHub()" class="bg-red-900/40 hover:bg-red-800 text-red-300 font-medium px-4 py-2.5 rounded-lg transition-colors border border-red-800/50 shadow-sm flex items-center gap-2">
+                        🗑️ 清空 Hub
+                    </button>
+
+                    <button id="stage-btn" data-project-name="{{ .Project.ProjectName }}" onclick="stageMarkdown()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 shadow-lg">
+                        ➕ 加入準備區
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-gray-950 p-5 rounded-lg border border-gray-700 max-h-[400px] overflow-y-auto custom-scrollbar">
+                <pre id="markdown-content" class="text-sm font-mono text-gray-300 whitespace-pre-wrap leading-relaxed">{{ .Markdown }}</pre>
+            </div>
+        </div>
+        {{ else }}
+        <div class="flex flex-col items-center justify-center py-16 border-2 border-dashed border-gray-700 rounded-xl bg-gray-800/50 mb-6">
+            <span class="text-5xl mb-4 opacity-50">📭</span>
+            <h3 class="text-xl font-medium text-gray-300 mb-2">Hub 目前空空如也</h3>
+            <p class="text-gray-500 text-center max-w-md">
+                請在任何專案目錄下執行 <code class="bg-gray-900 text-blue-400 px-2 py-1 rounded font-mono text-sm mx-1">nelo push</code>。
+            </p>
+        </div>
+        {{ end }}
+
+        <div id="staging-area" class="bg-gray-800 rounded-xl p-6 shadow-2xl border border-gray-700">
+            <h2 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-3 flex items-center gap-2">
+                <span>📦</span> 準備輸出的檔案區
+            </h2>
+
+            <div id="empty-staging-msg" class="text-gray-500 text-center py-6 border-2 border-dashed border-gray-700 rounded-lg mb-4">
+                這裡目前是空的喔！請點擊上方的「➕ 加入準備區」
+            </div>
+            
+            <div id="file-list" class="flex flex-col gap-2 mb-6 hidden"></div>
+
+            <div class="flex gap-3 bg-gray-900/50 p-4 rounded-lg border border-gray-700">
+                <button onclick="downloadSelected()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-medium px-5 py-2 rounded transition-colors flex items-center gap-2 shadow" title="會下載實體 .md 檔案，可直接拖曳給 Gemini">
+                    ⬇️ 下載實體檔案 (可當附件)
+                </button>
+                <button onclick="copySelected()" class="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium px-5 py-2 rounded transition-colors flex items-center gap-2 shadow" title="將內容複製到剪貼簿，可直接貼在對話框">
+                    📋 複製純文字內容
+                </button>
+                <button onclick="deleteSelected()" class="bg-red-900/50 hover:bg-red-800 text-red-300 font-medium px-5 py-2 rounded transition-colors ml-auto border border-red-800/50">
+                    🗑️ 移除選取項目
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
