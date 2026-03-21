@@ -132,3 +132,45 @@ function fallbackCopy(text, successMsg) {
 document.addEventListener('DOMContentLoaded', () => {
     renderStagingArea();
 });
+
+// ==========================================
+// 自動刷新與狀態保存機制
+// ==========================================
+
+// 1. 頁面卸載/重整前，把準備區的資料存進瀏覽器本地空間
+window.addEventListener('beforeunload', () => {
+    localStorage.setItem('nelo_staged_files', JSON.stringify(stagedFiles));
+});
+
+// 2. 修改你原本的 DOMContentLoaded 監聽器，加入讀取存檔的邏輯
+document.addEventListener('DOMContentLoaded', () => {
+    // 嘗試從 localStorage 恢復準備區資料
+    const saved = localStorage.getItem('nelo_staged_files');
+    if (saved) {
+        stagedFiles = JSON.parse(saved);
+    }
+    renderStagingArea();
+});
+
+// 3. 自動檢查更新邏輯
+let currentPushTime = null;
+
+function checkForUpdates() {
+    fetch('/api/status')
+        .then(response => response.json())
+        .then(data => {
+            // 第一次獲取狀態，只記錄當下時間戳
+            if (currentPushTime === null) {
+                currentPushTime = data.last_push_time;
+            } 
+            // 如果伺服器的時間戳改變了，代表有新的 push 進來！
+            else if (data.last_push_time !== currentPushTime) {
+                console.log("偵測到新的專案推送，正在更新畫面...");
+                window.location.reload(); // 自動重整頁面
+            }
+        })
+        .catch(err => console.debug("等待伺服器連線中..."));
+}
+
+// 每 1.5 秒向伺服器敲門問一次狀態
+setInterval(checkForUpdates, 1500);

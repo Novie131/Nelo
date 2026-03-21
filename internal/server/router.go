@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/Novie131/Nelo/internal/formatter"
 	"github.com/Novie131/Nelo/internal/models"
@@ -10,6 +11,7 @@ import (
 
 // LatestProject 暫存最新收到的專案
 var LatestProject *models.ProjectPayload
+var LastPushTime int64
 
 // Start 啟動 Nelo Hub
 func Start(port string) {
@@ -31,6 +33,7 @@ func Start(port string) {
 		}
 
 		LatestProject = &payload
+		LastPushTime = time.Now().UnixNano()
 
 		c.JSON(http.StatusOK, gin.H{
 			"message":    "✅ 成功接收專案: " + payload.ProjectName,
@@ -60,6 +63,12 @@ func Start(port string) {
 	r.DELETE("/api/context", func(c *gin.Context) {
 		LatestProject = nil
 		c.JSON(http.StatusOK, gin.H{"message": "🗑️ Hub 已經清空"})
+	})
+
+	r.GET("/api/status", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"last_push_time": LastPushTime,
+		})
 	})
 
 	r.Run(":" + port)
