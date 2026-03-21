@@ -47,6 +47,11 @@ go install ./cmd/nelo
 nelo push
 ```
 
+### 4. 懶人指令
+```bash
+bash ./scripts/stop.sh && bash ./scripts/build.sh && bash ./scripts/start.sh
+```
+
 ---
 
 ## 專案結構 | Directory Structure
