@@ -37,3 +37,7 @@ Thumbs.db
 
 # --- Go 依賴 ---
 vendor/
+
+# --- 日誌檔案 (Logs) ---
+# 忽略所有 .log 結尾的檔案（包含 nelo.log）
+*.log

@@ -1,6 +1,7 @@
 package scanner
 
 import (
+	"io" // 👈 新增 io 套件來判斷 io.EOF
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,8 +32,28 @@ func ScanProject(root string, excludes []string) ([]FileInfo, error) {
 			}
 		}
 
-		// 只抓取我們感興趣的程式碼檔案
-		if !d.IsDir() && isTargetFile(path) {
+		// 💡 新增邏輯：如果是資料夾，檢查是否為空
+		if d.IsDir() {
+			f, err := os.Open(path)
+			if err == nil {
+				// 嘗試讀取 1 個內容
+				_, err = f.Readdirnames(1)
+				f.Close()
+
+				// 如果回傳 io.EOF，代表裡面完全沒有檔案或子目錄（空資料夾）
+				if err == io.EOF {
+					relPath, _ := filepath.Rel(root, path)
+					files = append(files, FileInfo{
+						Path:    relPath + "/",       // 結尾加上斜線，讓肉眼一看就知道是資料夾
+						Content: "(Empty Directory)", // 塞入提示文字取代原本的程式碼內容
+					})
+				}
+			}
+			return nil // 資料夾處理完畢，繼續往下掃描
+		}
+
+		// 原本邏輯：只抓取我們感興趣的程式碼檔案
+		if isTargetFile(path) {
 			content, err := os.ReadFile(path)
 			if err != nil {
 				return nil // 讀不到就跳過
